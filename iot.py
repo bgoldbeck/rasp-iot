@@ -16,31 +16,22 @@ import Adafruit_DHT
 import urllib2
 
 def getSensorData():
-    RH, T = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 23)
+    RH, T = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, 23)
     # return dict
+    T = (T * 1.8) + 32.0
     return (str(RH), str(T))
 
 # main() function
 def main():
-    # use sys.argv if needed
-    if len(sys.argv) < 2:
-        print('Usage: python tstest.py PRIVATE_KEY')
-        exit(0)
+    api = 'L3Y1HU1KIQ65IPQD'  
     print 'starting...'
 
-    baseURL = 'https://api.thingspeak.com/update?api_key=%s' % sys.argv[1]
+    baseURL = 'https://api.thingspeak.com/update?api_key=%s' % api 
 
-    while True:
-        try:
-            RH, T = getSensorData()
-            f = urllib2.urlopen(baseURL +
-                                "&field1=%s&field2=%s" % (RH, T))
-            print f.read()
-            f.close()
-            sleep(15)
-        except:
-            print 'exiting.'
-            break
+    RH, T = getSensorData()
+    f = urllib2.urlopen(baseURL +
+                                "&field1=%s&field2=%s" % (T, RH))
+    f.close()
 
 # call main
 if __name__ == '__main__':
